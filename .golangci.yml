@@ -1,0 +1,72 @@
+version: "2"
+run:
+  concurrency: 4
+  modules-download-mode: readonly
+  issues-exit-code: 1
+  tests: true
+output:
+  formats:
+    text:
+      path: stdout
+      print-linter-name: true
+      print-issued-lines: true
+linters:
+  default: all
+  disable:
+    - depguard
+    - err113
+    - exhaustruct
+    - ireturn
+    - perfsprint
+    - revive
+    - tagalign
+    - tagliatelle
+    - wsl
+    - wsl_v5
+    - noinlineerr
+    - gomodguard
+
+  settings:
+    misspell:
+      locale: US
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - dupl
+          - funlen
+          - gocyclo
+          - cyclop
+          - varnamelen
+          - goconst
+        path: _test\.go
+      - linters:
+          - dupl
+          - errcheck
+          - funlen
+          - gochecknoglobals
+          - gocyclo
+          - gosec
+          - maligned
+        path: _mock\.go
+    paths:
+      - vendor
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - vendor
+      - third_party$
+      - builtin$
+      - examples$
