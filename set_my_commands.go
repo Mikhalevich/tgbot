@@ -15,7 +15,7 @@ func (t *TGBot) setMyCommands(ctx context.Context) error {
 	if _, err := t.bot.SetMyCommands(ctx, &bot.SetMyCommandsParams{
 		Commands: t.commands,
 	}); err != nil {
-		return fmt.Errorf("set my commads: %w", err)
+		return fmt.Errorf("set my commands: %w", err)
 	}
 
 	return nil
