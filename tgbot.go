@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	defaultReadTimeout      = time.Second * 10
-	defaultWriteTimeout     = time.Second * 10
-	defaultShoutdownTimeout = time.Second * 30
+	defaultReadTimeout     = time.Second * 10
+	defaultWriteTimeout    = time.Second * 10
+	defaultShutdownTimeout = time.Second * 30
 )
 
 type Probe func(ctx context.Context) error
@@ -34,9 +34,9 @@ func New(
 			tracerFn: func() Tracer {
 				return NewNoopTracer()
 			},
-			readTimeout:      defaultReadTimeout,
-			writeTimeout:     defaultWriteTimeout,
-			shoutdownTimeout: defaultShoutdownTimeout,
+			readTimeout:     defaultReadTimeout,
+			writeTimeout:    defaultWriteTimeout,
+			shutdownTimeout: defaultShutdownTimeout,
 		},
 	}
 

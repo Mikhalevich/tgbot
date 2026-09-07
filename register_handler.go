@@ -122,7 +122,7 @@ func (t *TGBot) AddDefaultTextHandler(h Handler) {
 	)
 }
 
-func (t *TGBot) AddDefaultCallbackQueryHander(h Handler) {
+func (t *TGBot) AddDefaultCallbackQueryHandler(h Handler) {
 	t.bot.RegisterHandler(
 		bot.HandlerTypeCallbackQueryData,
 		"",

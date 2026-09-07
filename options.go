@@ -5,13 +5,13 @@ import (
 )
 
 type options struct {
-	webHookToken     string
-	tracerFn         NewTracerFn
-	livenessProbe    Probe
-	readinessProbe   Probe
-	readTimeout      time.Duration
-	writeTimeout     time.Duration
-	shoutdownTimeout time.Duration
+	webHookToken    string
+	tracerFn        NewTracerFn
+	livenessProbe   Probe
+	readinessProbe  Probe
+	readTimeout     time.Duration
+	writeTimeout    time.Duration
+	shutdownTimeout time.Duration
 }
 
 type Option func(o *options)
@@ -60,6 +60,6 @@ func WithWriteTimeout(timeout time.Duration) Option {
 
 func WithShoutdownTimeout(timeout time.Duration) Option {
 	return func(o *options) {
-		o.shoutdownTimeout = timeout
+		o.shutdownTimeout = timeout
 	}
 }
