@@ -58,7 +58,7 @@ func (t *TGBot) listenHTTP(ctx context.Context, hndlr http.Handler) error {
 	case <-ctx.Done():
 	}
 
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), t.opts.shoutdownTimeout)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), t.opts.shutdownTimeout)
 	defer cancel()
 
 	//nolint:contextcheck

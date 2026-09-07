@@ -122,7 +122,7 @@ func (t *TGBot) AddDefaultTextHandler(h Handler) {
 	)
 }
 
-func (t *TGBot) AddDefaultCallbackQueryHander(h Handler) {
+func (t *TGBot) AddDefaultCallbackQueryHandler(h Handler) {
 	t.bot.RegisterHandler(
 		bot.HandlerTypeCallbackQueryData,
 		"",
@@ -135,9 +135,17 @@ func (t *TGBot) wrapHandler(pattern string, handler Handler) bot.HandlerFunc {
 	handler = t.applyMiddleware(handler)
 
 	return func(ctx context.Context, botAPI *bot.Bot, update *models.Update) {
-		msg := makeMsgFromUpdate(update)
+		var (
+			msg           = makeMsgFromUpdate(update)
+			handlerTracer = t.opts.tracerFn()
+		)
+
+		ctx = handlerTracer.Before(ctx, pattern, msg)
+		defer handlerTracer.After(ctx)
 
 		if err := handler(ctx, msg, t); err != nil {
+			handlerTracer.OnError(ctx, err)
+
 			if _, err := botAPI.SendMessage(ctx, &bot.SendMessageParams{
 				ChatID: msg.ChatID,
 				ReplyParameters: &models.ReplyParameters{
@@ -147,7 +155,11 @@ func (t *TGBot) wrapHandler(pattern string, handler Handler) bot.HandlerFunc {
 			}); err != nil {
 				log.Printf("send message error for pattern %q: %v", pattern, err)
 			}
+
+			return
 		}
+
+		handlerTracer.OnSuccess(ctx)
 	}
 }
 

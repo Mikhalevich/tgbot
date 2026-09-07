@@ -5,12 +5,13 @@ import (
 )
 
 type options struct {
-	webHookToken     string
-	livenessProbe    Probe
-	readinessProbe   Probe
-	readTimeout      time.Duration
-	writeTimeout     time.Duration
-	shoutdownTimeout time.Duration
+	webHookToken    string
+	tracerFn        NewTracerFn
+	livenessProbe   Probe
+	readinessProbe  Probe
+	readTimeout     time.Duration
+	writeTimeout    time.Duration
+	shutdownTimeout time.Duration
 }
 
 type Option func(o *options)
@@ -24,6 +25,12 @@ func (o *options) apply(opts []Option) {
 func WithWebHookToken(token string) Option {
 	return func(o *options) {
 		o.webHookToken = token
+	}
+}
+
+func WithNewTracerFn(tracerFn NewTracerFn) Option {
+	return func(o *options) {
+		o.tracerFn = tracerFn
 	}
 }
 
@@ -53,6 +60,6 @@ func WithWriteTimeout(timeout time.Duration) Option {
 
 func WithShoutdownTimeout(timeout time.Duration) Option {
 	return func(o *options) {
-		o.shoutdownTimeout = timeout
+		o.shutdownTimeout = timeout
 	}
 }
