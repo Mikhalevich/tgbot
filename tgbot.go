@@ -31,6 +31,9 @@ func New(
 ) (*TGBot, error) {
 	tgBot := TGBot{
 		opts: options{
+			tracerFn: func() Tracer {
+				return NewNoopTracer()
+			},
 			readTimeout:      defaultReadTimeout,
 			writeTimeout:     defaultWriteTimeout,
 			shoutdownTimeout: defaultShoutdownTimeout,

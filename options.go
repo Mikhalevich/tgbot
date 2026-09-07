@@ -6,6 +6,7 @@ import (
 
 type options struct {
 	webHookToken     string
+	tracerFn         NewTracerFn
 	livenessProbe    Probe
 	readinessProbe   Probe
 	readTimeout      time.Duration
@@ -24,6 +25,12 @@ func (o *options) apply(opts []Option) {
 func WithWebHookToken(token string) Option {
 	return func(o *options) {
 		o.webHookToken = token
+	}
+}
+
+func WithNewTracerFn(tracerFn NewTracerFn) Option {
+	return func(o *options) {
+		o.tracerFn = tracerFn
 	}
 }
 
