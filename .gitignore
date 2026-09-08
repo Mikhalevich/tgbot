@@ -28,11 +28,6 @@ go.work.sum
 /bin
 /tools
 
-/cmd/botwebhook/botwebhook
-/cmd/botwebhook/config/config.yaml
-/cmd/botwebhook/config/tadc-box.pem
-
-/config/config-bot.yaml
-/config/config-poller.yaml
-/config/config-outboxpoller.yaml
-/config/dbconfig.yml
+/cmd/webhook/webhook
+/cmd/webhook/config/config.yaml
+/cmd/webhook/config/public.pem
