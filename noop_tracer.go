@@ -7,6 +7,7 @@ import (
 type NoopTracer struct {
 }
 
+// NewNoopTracer returns a no-op Tracer implementation that performs no tracing actions.
 func NewNoopTracer() NoopTracer {
 	return NoopTracer{}
 }

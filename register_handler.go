@@ -25,6 +25,9 @@ type User struct {
 	Username  string
 }
 
+// FullName returns the full name of the user by combining the first and last name.
+// If only one of the names is set, it returns that name.
+// If both are empty, it returns an empty string.
 func (u User) FullName() string {
 	if u.FirstName == "" {
 		return u.LastName
@@ -57,10 +60,14 @@ type MessageSender interface {
 
 type Handler func(ctx context.Context, msg BotMessage, sender MessageSender) error
 
+// AddMenuCommand registers a bot command with a description in the bot's menu.
+// The command is also registered as a handler for incoming messages matching the command.
 func (t *TGBot) AddMenuCommand(command string, description string, handler Handler) {
 	t.addCommand(command, description, handler)
 }
 
+// AddTextCommand registers a command handler without a menu description.
+// The handler is triggered when a message starts with the given command.
 func (t *TGBot) AddTextCommand(command string, handler Handler) {
 	t.addCommand(command, "", handler)
 }
@@ -108,11 +115,14 @@ func commandMatchFn(command string) bot.MatchFunc {
 	}
 }
 
+// AddDefaultHandler sets the handler that is called when no other command handler matches an incoming message.
 func (t *TGBot) AddDefaultHandler(h Handler) {
 	h = t.applyMiddleware(h)
 	t.defaultHandlerFn = h
 }
 
+// AddDefaultTextHandler registers a handler for all text messages that do not match any registered command.
+// The handler is called with the full message text as the pattern.
 func (t *TGBot) AddDefaultTextHandler(h Handler) {
 	t.bot.RegisterHandler(
 		bot.HandlerTypeMessageText,
@@ -122,6 +132,7 @@ func (t *TGBot) AddDefaultTextHandler(h Handler) {
 	)
 }
 
+// AddDefaultCallbackQueryHandler registers a handler for all callback query updates.
 func (t *TGBot) AddDefaultCallbackQueryHandler(h Handler) {
 	t.bot.RegisterHandler(
 		bot.HandlerTypeCallbackQueryData,

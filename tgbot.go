@@ -25,6 +25,9 @@ type TGBot struct {
 	defaultHandlerFn Handler
 }
 
+// New creates a new TGBot instance with the given Telegram bot token and options.
+// It initializes the bot API and applies all provided options.
+// Returns an error if the bot API creation fails.
 func New(
 	token string,
 	opts ...Option,
