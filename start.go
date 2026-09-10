@@ -7,6 +7,10 @@ import (
 	"net/http"
 )
 
+// Start initializes the bot and begins processing updates.
+// If a webhook token was configured, it starts the webhook server and HTTP listener.
+// Otherwise, it starts the bot in long-polling mode.
+// Returns an error if starting the bot or webhook server fails.
 func (t *TGBot) Start(ctx context.Context) error {
 	if err := t.setMyCommands(ctx); err != nil {
 		return fmt.Errorf("set my commands: %w", err)

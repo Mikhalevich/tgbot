@@ -2,6 +2,8 @@ package tgbot
 
 type Middleware func(next Handler) Handler
 
+// AddMiddleware adds a middleware function to the bot's middleware chain.
+// Middlewares are applied in the order they were added.
 func (t *TGBot) AddMiddleware(m Middleware) {
 	t.middlewares = append(t.middlewares, m)
 }
