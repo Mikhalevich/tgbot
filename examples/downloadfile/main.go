@@ -111,7 +111,7 @@ func downloadFile(ctx context.Context, operations tgbot.Operations, fileID, file
 
 // saveFile writes content to a temporary file and renames it to fileName on success,
 // so a failed download never leaves a partial file under the final name.
-func saveFile(content io.Reader, fileName string) error {
+func saveFile(content io.Reader, fileName string) (err error) {
 	tmpFile, err := os.CreateTemp(downloadDir, fileName+".*.tmp")
 	if err != nil {
 		return fmt.Errorf("create temp file: %w", err)
@@ -119,22 +119,23 @@ func saveFile(content io.Reader, fileName string) error {
 
 	tmpName := tmpFile.Name()
 
-	if _, err := io.Copy(tmpFile, content); err != nil {
-		tmpFile.Close()
-		os.Remove(tmpName)
+	defer func() {
+		if err != nil {
+			// closing twice is harmless, the second close just returns an error
+			tmpFile.Close()
+			os.Remove(tmpName)
+		}
+	}()
 
+	if _, err = io.Copy(tmpFile, content); err != nil {
 		return fmt.Errorf("copy file content: %w", err)
 	}
 
-	if err := tmpFile.Close(); err != nil {
-		os.Remove(tmpName)
-
+	if err = tmpFile.Close(); err != nil {
 		return fmt.Errorf("close temp file: %w", err)
 	}
 
-	if err := os.Rename(tmpName, filepath.Join(downloadDir, fileName)); err != nil {
-		os.Remove(tmpName)
-
+	if err = os.Rename(tmpName, filepath.Join(downloadDir, fileName)); err != nil {
 		return fmt.Errorf("rename temp file: %w", err)
 	}
 
