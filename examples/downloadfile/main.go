@@ -98,15 +98,44 @@ func downloadFile(ctx context.Context, operations tgbot.Operations, fileID, file
 
 	defer rsp.Body.Close()
 
-	file, err := os.Create(filepath.Join(downloadDir, fileName))
-	if err != nil {
-		return fmt.Errorf("open file %s: %w", fileName, err)
+	if rsp.StatusCode != http.StatusOK {
+		return fmt.Errorf("unexpected http status: %s", rsp.Status)
 	}
 
-	defer file.Close()
+	if err := saveFile(rsp.Body, fileName); err != nil {
+		return fmt.Errorf("save file %s: %w", fileName, err)
+	}
 
-	if _, err := io.Copy(file, rsp.Body); err != nil {
+	return nil
+}
+
+// saveFile writes content to a temporary file and renames it to fileName on success,
+// so a failed download never leaves a partial file under the final name.
+func saveFile(content io.Reader, fileName string) error {
+	tmpFile, err := os.CreateTemp(downloadDir, fileName+".*.tmp")
+	if err != nil {
+		return fmt.Errorf("create temp file: %w", err)
+	}
+
+	tmpName := tmpFile.Name()
+
+	if _, err := io.Copy(tmpFile, content); err != nil {
+		tmpFile.Close()
+		os.Remove(tmpName)
+
 		return fmt.Errorf("copy file content: %w", err)
+	}
+
+	if err := tmpFile.Close(); err != nil {
+		os.Remove(tmpName)
+
+		return fmt.Errorf("close temp file: %w", err)
+	}
+
+	if err := os.Rename(tmpName, filepath.Join(downloadDir, fileName)); err != nil {
+		os.Remove(tmpName)
+
+		return fmt.Errorf("rename temp file: %w", err)
 	}
 
 	return nil
