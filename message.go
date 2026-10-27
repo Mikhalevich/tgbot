@@ -4,6 +4,16 @@ import (
 	"fmt"
 )
 
+type Type int
+
+const (
+	TypeInvalid Type = iota
+	TypeText
+	TypeCallbackQuery
+	TypePayment
+	TypeDocument
+)
+
 type Payment struct {
 	IsSuccessful   bool
 	IsCheckout     bool
@@ -34,15 +44,23 @@ func (u User) FullName() string {
 	return fmt.Sprintf("%s %s", u.FirstName, u.LastName)
 }
 
+type Document struct {
+	FileID   string
+	FileName string
+	FileSize int64
+}
+
 type Message struct {
+	Type      Type
 	MessageID int
 	ChatID    int64
 	IsGroup   bool
 	User      User
 	// for text message
 	Text string
+	Args string
 	// for callback query
-	Data    string
-	Payment Payment
-	Args    string
+	Data     string
+	Payment  Payment
+	Document Document
 }

@@ -26,8 +26,8 @@ func main() {
 	}
 
 	bot.AddDefaultHandler(
-		func(ctx context.Context, msg tgbot.Message, sender tgbot.MessageSender) error {
-			sender.SendMessage(
+		func(ctx context.Context, msg tgbot.Message, operations tgbot.Operations) error {
+			operations.SendMessage(
 				ctx,
 				msg.ChatID,
 				fmt.Sprintf("reply for %q", msg.Text),
