@@ -81,6 +81,22 @@ func fillMessage(update *models.Message) Message {
 		return msg
 	}
 
+	if len(update.Photo) > 0 {
+		msg.Type = TypePhoto
+		msg.Photo = make([]PhotoSize, 0, len(update.Photo))
+
+		for _, photo := range update.Photo {
+			msg.Photo = append(msg.Photo, PhotoSize{
+				FileID:   photo.FileID,
+				Width:    photo.Width,
+				Height:   photo.Height,
+				FileSize: int64(photo.FileSize),
+			})
+		}
+
+		return msg
+	}
+
 	msg.Type = TypeText
 	msg.Args = commandArgs(update)
 
