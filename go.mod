@@ -1,6 +1,6 @@
 module github.com/Mikhalevich/tgbot
 
-go 1.26.6
+go 1.27.0
 
 require (
 	github.com/go-telegram/bot v1.25.0

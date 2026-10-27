@@ -23,6 +23,8 @@ func doProbe(probe Probe) http.HandlerFunc {
 
 			if err := probe(r.Context()); err != nil {
 				http.Error(w, "DOWN", http.StatusInternalServerError)
+
+				return
 			}
 
 			w.WriteHeader(http.StatusOK)

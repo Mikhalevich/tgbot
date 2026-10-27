@@ -7,7 +7,7 @@ ENV_PATH = PATH=$(GOBIN):$(PATH)
 BIN_PATH ?= $(ROOT)/bin
 
 LINTER_NAME := golangci-lint
-LINTER_VERSION := v2.12.2
+LINTER_VERSION := v2.15.0
 
 APP_TAG := 0.5.2
 
