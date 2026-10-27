@@ -26,8 +26,8 @@ func main() {
 	}
 
 	bot.AddDefaultHandler(
-		func(ctx context.Context, msg tgbot.BotMessage, sender tgbot.MessageSender) error {
-			sender.SendMessage(
+		func(ctx context.Context, msg tgbot.Message, operations tgbot.Operations) error {
+			operations.SendMessage(
 				ctx,
 				msg.ChatID,
 				fmt.Sprintf("reply for %q", msg.Text),
@@ -55,7 +55,7 @@ func NewTracer(logger *slog.Logger) tracer {
 	}
 }
 
-func (t tracer) Before(ctx context.Context, pattern string, msg tgbot.BotMessage) context.Context {
+func (t tracer) Before(ctx context.Context, pattern string, msg tgbot.Message) context.Context {
 	t.logger.Info("before handler log", slog.String("msg_text", msg.Text))
 
 	return ctx

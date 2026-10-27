@@ -12,7 +12,7 @@ func NewNoopTracer() NoopTracer {
 	return NoopTracer{}
 }
 
-func (n NoopTracer) Before(ctx context.Context, pattern string, msg BotMessage) context.Context {
+func (n NoopTracer) Before(ctx context.Context, pattern string, msg Message) context.Context {
 	return ctx
 }
 
