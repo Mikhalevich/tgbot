@@ -12,6 +12,7 @@ const (
 	TypeCallbackQuery
 	TypePayment
 	TypeDocument
+	TypePhoto
 )
 
 type Payment struct {
@@ -50,6 +51,17 @@ type Document struct {
 	FileSize int64
 }
 
+type PhotoSize struct {
+	FileID   string
+	Width    int
+	Height   int
+	FileSize int64
+}
+
+func (p PhotoSize) Size() int {
+	return p.Width * p.Height
+}
+
 type Message struct {
 	Type      Type
 	MessageID int
@@ -63,4 +75,24 @@ type Message struct {
 	Data     string
 	Payment  Payment
 	Document Document
+	// available photo sizes
+	Photo []PhotoSize
+}
+
+// LargestPhoto returns the photo size with the highest resolution.
+// The second return value is false if the message has no photo.
+func (m Message) LargestPhoto() (PhotoSize, bool) {
+	if len(m.Photo) == 0 {
+		return PhotoSize{}, false
+	}
+
+	largest := m.Photo[0]
+
+	for _, photo := range m.Photo[1:] {
+		if photo.Size() > largest.Size() {
+			largest = photo
+		}
+	}
+
+	return largest, true
 }
