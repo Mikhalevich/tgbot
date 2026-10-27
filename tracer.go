@@ -5,7 +5,7 @@ import (
 )
 
 type Tracer interface {
-	Before(ctx context.Context, pattern string, msg BotMessage) context.Context
+	Before(ctx context.Context, pattern string, msg Message) context.Context
 	OnSuccess(ctx context.Context)
 	OnError(ctx context.Context, err error)
 	After(ctx context.Context)

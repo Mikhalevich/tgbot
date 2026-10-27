@@ -2,7 +2,6 @@ package tgbot
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"strings"
 
@@ -10,55 +9,12 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-type Payment struct {
-	IsSuccessful   bool
-	IsCheckout     bool
-	ID             string
-	InvoicePayload string
-	Currency       string
-	TotalAmount    int
-}
-
-type User struct {
-	FirstName string
-	LastName  string
-	Username  string
-}
-
-// FullName returns the full name of the user by combining the first and last name.
-// If only one of the names is set, it returns that name.
-// If both are empty, it returns an empty string.
-func (u User) FullName() string {
-	if u.FirstName == "" {
-		return u.LastName
-	}
-
-	if u.LastName == "" {
-		return u.FirstName
-	}
-
-	return fmt.Sprintf("%s %s", u.FirstName, u.LastName)
-}
-
-type BotMessage struct {
-	MessageID int
-	ChatID    int64
-	IsGroup   bool
-	User      User
-	// for text message
-	Text string
-	// for callback query
-	Data    string
-	Payment Payment
-	Args    string
-}
-
 type MessageSender interface {
 	SendMessage(ctx context.Context, chatID int64, msg string)
 	DeleteMessage(ctx context.Context, chatID int64, messageID int)
 }
 
-type Handler func(ctx context.Context, msg BotMessage, sender MessageSender) error
+type Handler func(ctx context.Context, msg Message, sender MessageSender) error
 
 // AddMenuCommand registers a bot command with a description in the bot's menu.
 // The command is also registered as a handler for incoming messages matching the command.
@@ -147,7 +103,7 @@ func (t *TGBot) wrapHandler(pattern string, handler Handler) bot.HandlerFunc {
 
 	return func(ctx context.Context, botAPI *bot.Bot, update *models.Update) {
 		var (
-			msg           = makeMsgFromUpdate(update)
+			msg           = convertToMessage(update)
 			handlerTracer = t.opts.tracerFn()
 		)
 
@@ -174,7 +130,7 @@ func (t *TGBot) wrapHandler(pattern string, handler Handler) bot.HandlerFunc {
 	}
 }
 
-func makeMsgFromUpdate(update *models.Update) BotMessage {
+func convertToMessage(update *models.Update) Message {
 	if update.Message != nil {
 		msg := fillBaseMessage(update.Message, update.Message.From)
 		msg.Args = commandArgs(update.Message)
@@ -200,7 +156,7 @@ func makeMsgFromUpdate(update *models.Update) BotMessage {
 		}
 
 		if update.CallbackQuery.Message.InaccessibleMessage != nil {
-			return BotMessage{
+			return Message{
 				MessageID: update.CallbackQuery.Message.InaccessibleMessage.MessageID,
 				ChatID:    update.CallbackQuery.Message.InaccessibleMessage.Chat.ID,
 				Data:      update.CallbackQuery.Data,
@@ -209,7 +165,7 @@ func makeMsgFromUpdate(update *models.Update) BotMessage {
 	}
 
 	if update.PreCheckoutQuery != nil {
-		return BotMessage{
+		return Message{
 			Payment: Payment{
 				IsCheckout:     true,
 				ID:             update.PreCheckoutQuery.ID,
@@ -220,11 +176,11 @@ func makeMsgFromUpdate(update *models.Update) BotMessage {
 		}
 	}
 
-	return BotMessage{}
+	return Message{}
 }
 
-func fillBaseMessage(msg *models.Message, user *models.User) BotMessage {
-	botMsg := BotMessage{
+func fillBaseMessage(msg *models.Message, user *models.User) Message {
+	botMsg := Message{
 		MessageID: msg.ID,
 		ChatID:    msg.Chat.ID,
 		IsGroup:   msg.Chat.Type != models.ChatTypePrivate,

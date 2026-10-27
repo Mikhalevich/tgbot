@@ -6,7 +6,7 @@ import (
 	"github.com/go-telegram/bot"
 )
 
-func (t *TGBot) defaultHandler(ctx context.Context, msg BotMessage, sender MessageSender) error {
+func (t *TGBot) defaultHandler(ctx context.Context, msg Message, sender MessageSender) error {
 	if t.defaultHandlerFn != nil {
 		return t.defaultHandlerFn(ctx, msg, sender)
 	}
