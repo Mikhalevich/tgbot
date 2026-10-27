@@ -39,6 +39,11 @@ func fillBaseMessage(msg *models.Message, user *models.User) Message {
 		Text:      msg.Text,
 	}
 
+	// media messages (document, photo, etc.) carry their text in caption
+	if botMsg.Text == "" {
+		botMsg.Text = msg.Caption
+	}
+
 	if user != nil {
 		botMsg.User = User{
 			FirstName: user.FirstName,

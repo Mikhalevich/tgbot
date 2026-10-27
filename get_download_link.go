@@ -19,5 +19,5 @@ func (t *TGBot) GetDownloadLink(
 		return "", fmt.Errorf("get file: %w", err)
 	}
 
-	return fmt.Sprintf("https://api.telegram.org/file/bot%s/%s", t.bot.Token(), file.FilePath), nil
+	return t.bot.FileDownloadLink(file), nil
 }
