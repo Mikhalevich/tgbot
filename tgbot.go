@@ -10,6 +10,7 @@ import (
 )
 
 const (
+	defaultWorkersCount    = 3
 	defaultReadTimeout     = time.Second * 10
 	defaultWriteTimeout    = time.Second * 10
 	defaultShutdownTimeout = time.Second * 30
@@ -34,6 +35,7 @@ func New(
 ) (*TGBot, error) {
 	tgBot := TGBot{
 		opts: options{
+			workers: defaultWorkersCount,
 			tracerFn: func() Tracer {
 				return NewNoopTracer()
 			},
@@ -47,6 +49,7 @@ func New(
 
 	botAPI, err := createBotAPI(
 		token,
+		tgBot.opts.workers,
 		tgBot.opts.webHookToken,
 		tgBot.makeDefaultHandler(),
 	)
@@ -62,11 +65,13 @@ func New(
 
 func createBotAPI(
 	token string,
+	workers int,
 	webHookToken string,
 	defaultHandler bot.HandlerFunc,
 ) (*bot.Bot, error) {
 	opts := []bot.Option{
 		bot.WithSkipGetMe(),
+		bot.WithWorkers(workers),
 		bot.WithDefaultHandler(defaultHandler),
 	}
 
