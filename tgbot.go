@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	defaultWorkersCount    = 3
+	defaultWorkersCount    = 1
 	defaultReadTimeout     = time.Second * 10
 	defaultWriteTimeout    = time.Second * 10
 	defaultShutdownTimeout = time.Second * 30

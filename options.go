@@ -30,6 +30,7 @@ func WithWebHookToken(token string) Option {
 	}
 }
 
+// WithWorkers allows setting the number of parallel workers for processing.
 func WithWorkers(workers int) Option {
 	return func(o *options) {
 		o.workers = workers
