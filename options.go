@@ -6,6 +6,7 @@ import (
 
 type options struct {
 	webHookToken    string
+	workers         int
 	tracerFn        NewTracerFn
 	livenessProbe   Probe
 	readinessProbe  Probe
@@ -26,6 +27,13 @@ func (o *options) apply(opts []Option) {
 func WithWebHookToken(token string) Option {
 	return func(o *options) {
 		o.webHookToken = token
+	}
+}
+
+// WithWorkers allows setting the number of parallel workers for processing.
+func WithWorkers(workers int) Option {
+	return func(o *options) {
+		o.workers = workers
 	}
 }
 
