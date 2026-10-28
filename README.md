@@ -15,6 +15,7 @@ A lightweight wrapper around `github.com/go-telegram/bot`. It adds a simple hand
 | [Quick start: long polling](#quick-start-long-polling) | Minimal code to get a bot running in polling mode |
 | [Quick start: webhook](#quick-start-webhook) | Minimal code to run the bot behind an HTTP webhook |
 | [Configuration](#configuration) | YAML config file (used by the webhook CLI) |
+| [Workers](#workers) | Parallel update processing with `WithWorkers` |
 | [Middleware](#middleware) | How to plug custom middleware |
 | [Tracing & probes](#tracing--probes) | Tracer interface, no-op implementation, liveness/readiness endpoints |
 | [Command registration](#command-registration) | `AddMenuCommand`, `AddTextCommand`, default / text / callback handlers |
@@ -28,7 +29,7 @@ A lightweight wrapper around `github.com/go-telegram/bot`. It adds a simple hand
 
 `tgbot` simplifies the most common tasks when building a Telegram bot in Go:
 
-* **Create a bot** with a token and optional options (`WithWebHookToken`, timeouts, tracer factory, probes).
+* **Create a bot** with a token and optional options (`WithWebHookToken`, `WithWorkers`, timeouts, tracer factory, probes).
 * **Run it** with `Start(ctx)` – long polling by default, or webhook mode (with a built-in HTTP server) when a webhook secret token is set.
 * **Register commands** that automatically appear in the bot's menu and match incoming updates.
 * **Add middleware** that wraps every handler (e.g. logging, auth, rate limiting).
@@ -43,6 +44,7 @@ The library is deliberately small – the core type is `TGBot` (see `tgbot.go`) 
 | Feature | Details |
 |---|---|
 | **Long-polling & webhook modes** | `Start(ctx)` uses webhook mode when `WithWebHookToken` is set, long polling otherwise. |
+| **Concurrent processing** | `WithWorkers(n)` processes updates with `n` parallel workers (default `1`). |
 | **Middleware chain** | `AddMiddleware`; middleware run in the order they were added (first added is outermost). |
 | **Tracer interface** | `Tracer.Before/OnSuccess/OnError/After`, created per handler call by `WithNewTracerFn`; `NewNoopTracer` included. |
 | **Liveness / readiness probes** | `/live` and `/ready` HTTP handlers in webhook mode; probe functions are optional. |
@@ -183,6 +185,21 @@ Available flags:
 | `--get` | `false` | Dump webhook info |
 | `--set` | `false` | Set webhook |
 | `--remove` | `false` | Remove webhook |
+
+## Workers
+
+By default updates are processed by a single worker, one at a time. Use `WithWorkers` to process them in parallel (works in both long-polling and webhook modes):
+
+```go
+bot, err := tgbot.New(
+	"YOUR_TELEGRAM_TOKEN",
+	tgbot.WithWorkers(4),
+)
+```
+
+* The value must be at least `1`: `0` means no update is ever processed, and a negative value makes `Start` panic.
+* With more than one worker, handlers run concurrently and there is **no ordering guarantee**, even for updates from the same chat. Handlers (and middleware/tracers) that share state must be safe for concurrent use.
+* Register all handlers before calling `Start`.
 
 ## Middleware
 
